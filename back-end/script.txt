@@ -1,0 +1,3 @@
+- Baixar o vídeo do YouTube através do link
+- Converter para .mp3
+- Cortar o vídeo através dos dados de entrada (tI e tF)
