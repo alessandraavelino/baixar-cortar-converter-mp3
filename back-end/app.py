@@ -3,35 +3,58 @@ from moviepy.editor import *
 import moviepy.editor as mp
 import re, os
 import utils
+from PyQt5 import uic, QtWidgets
 
-link = input("Digite o link do vídeo: ")
-path = input("Digite o diretório pra salvar: ")
-yt  = YouTube(link)
+def converter():
+    link = tela_principal.lineEdit.text()
+    path = tela_principal.lineEdit_4.text()
+    start_time = tela_principal.lineEdit_2.text()
+    end_time = tela_principal.lineEdit_3.text()
 
-print("Baixando...")
+# link = input("Digite o link do vídeo: ")
+# path = input("Digite o diretório pra salvar: ")
+    yt  = YouTube(link)
 
-ys = yt.streams.filter(only_audio=True).first().download(path)
-print("Download completo")
+    print("Baixando...")
 
-print("Convertendo arquivo")
+    ys = yt.streams.filter(only_audio=True).first().download("Downloads")
+    print("Download completo")
 
-for file in os.listdir(path):
-    if re.search("mp4", file):
-        mp4_path = os.path.join(path, file)
-        mp3_path = os.path.join(path, os.path.splitext(file)[0]+".mp3")
-        new_file = mp.AudioFileClip(mp4_path)
-        new_file.write_audiofile(mp3_path)
-        os.remove(mp4_path)
-print("sucesso!")
+    print("Convertendo arquivo")
 
-audio = AudioFileClip(mp3_path)
+    for file in os.listdir("Downloads"):
+        if re.search("mp4", file):
+            mp4_path = os.path.join("Downloads", file)
+            mp3_path = os.path.join("Downloads", os.path.splitext(file)[0]+".mp3")
+            new_file = mp.AudioFileClip(mp4_path)
+            new_file.write_audiofile(mp3_path)
+            os.remove(mp4_path)
+    print("sucesso!")
 
-start_time = input("Tempo inicial: ")
-fstart_time = utils.converter(start_time)
+    audio = AudioFileClip(mp3_path)
 
-end_time = input("Tempo final: ")
-fend_time = utils.converter(end_time)
+    #start_time = input("Tempo inicial: ")
+    fstart_time = utils.converter(start_time)
 
-trimed_video = audio.subclip(fstart_time, fend_time)
+    #end_time = input("Tempo final: ")
+    fend_time = utils.converter(end_time)
 
-trimed_video.write_audiofile("C:/Users/aless/OneDrive/Documentos/RaqYT/back-end/Downloads/SóOComeço.mp3")
+    trimed_video = audio.subclip(fstart_time, fend_time)
+
+    trimed_video.write_audiofile(f"Downloads/{path}.mp3")
+    abrirDialog()
+
+def abrirDialog():
+    tela_dialog.show()
+
+def fecharDialog():
+    tela_dialog.close()
+
+app = QtWidgets.QApplication([])
+tela_principal = uic.loadUi("view.ui")
+tela_dialog = uic.loadUi("dialog.ui")
+tela_principal.pushButton.clicked.connect(converter)
+tela_dialog.pushButton.clicked.connect(fecharDialog)
+
+tela_principal.show()
+app.exec()
